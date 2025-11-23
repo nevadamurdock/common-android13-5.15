@@ -1,0 +1,103 @@
+name: Build Kernels and Release
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build_kernel:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - sub_level: "50"
+            os_patch_level: "2024-10"
+          - sub_level: "56"
+            os_patch_level: "2024-11"
+          - sub_level: "57"
+            os_patch_level: "2024-12"
+          - sub_level: "58"
+            os_patch_level: "2025-01"
+          - sub_level: "66"
+            os_patch_level: "2025-02"
+          - sub_level: "77"
+            os_patch_level: "2025-03"
+          - sub_level: "82"
+            os_patch_level: "2025-04"
+          - sub_level: "87"
+            os_patch_level: "2025-05"
+          - sub_level: "89"
+            os_patch_level: "2025-06"
+          - sub_level: "98"
+            os_patch_level: "2025-07"
+          - sub_level: "102"
+            os_patch_level: "2025-09"
+          - sub_level: "X"
+            os_patch_level: "lts"
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set environment
+        run: |
+          echo "ANDROID_VERSION=android15" >> $GITHUB_ENV
+          echo "KERNEL_VERSION=6.6" >> $GITHUB_ENV
+          echo "SUB_LEVEL=${{ matrix.sub_level }}" >> $GITHUB_ENV
+          echo "OS_PATCH_LEVEL=${{ matrix.os_patch_level }}" >> $GITHUB_ENV
+          echo "DATE=$(TZ=Asia/Jakarta date +%Y%m%d%H%M)" >> $GITHUB_ENV
+          echo "ARTIFACT=$GITHUB_WORKSPACE/artifact" >> $GITHUB_ENV
+
+      - name: Make build.sh executable
+        run: chmod +x ./build.sh
+
+      - name: Build kernel
+        run: |
+          mkdir -p ${{ env.ARTIFACT }}
+          ./build.sh ${{ env.ANDROID_VERSION }} ${{ env.KERNEL_VERSION }} ${{ env.SUB_LEVEL }} ${{ env.OS_PATCH_LEVEL }} ${{ env.DATE }} ${{ env.ARTIFACT }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: "kernel-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}-${{ env.SUB_LEVEL }}-${{ env.OS_PATCH_LEVEL }}"
+          path: ${{ env.ARTIFACT }}/*
+
+  create_release:
+    needs: build_kernel
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup git authentication
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/kylieeXD/android_kernel_common-6.6
+
+      - name: Set DATE and TAG
+        run: |
+          DATE=$(TZ=Asia/Jakarta date +%Y%m%d%H%M)
+          echo "TAG=$DATE" >> $GITHUB_ENV
+
+      - name: Create Git tag
+        run: |
+          git tag -a "$TAG" -m "SukiSU & SuSFS"
+          git push origin "$TAG"
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifact
+
+      - name: Upload artifacts to release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.TAG }}
+          files: artifact/**
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
