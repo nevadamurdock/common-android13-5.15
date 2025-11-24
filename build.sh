@@ -159,7 +159,7 @@ rm -rf ./common/android/abi_gki_protected_exports_*
 perl -pi -e 's/^\s*"protected_exports_list"\s*:\s*"android\/abi_gki_protected_exports_aarch64",\s*$//;' ./common/BUILD.bazel
 
 # Set file name
-FILE_NAME="kernel-$kernel_version-$ACTUAL_SUBLEVEL-$android_version-$os_patch_level"
+FILE_NAME="kernel-$kernel_version-$ACTUAL_SUBLEVEL-$android_version-$os_patch_level.zip"
 
 # Build
 set -e && set -x
