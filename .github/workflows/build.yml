@@ -11,30 +11,78 @@ jobs:
     strategy:
       matrix:
         include:
-          - sub_level: "50"
-            os_patch_level: "2024-10"
-          - sub_level: "56"
-            os_patch_level: "2024-11"
-          - sub_level: "57"
-            os_patch_level: "2024-12"
-          - sub_level: "58"
-            os_patch_level: "2025-01"
-          - sub_level: "66"
-            os_patch_level: "2025-02"
-          - sub_level: "77"
-            os_patch_level: "2025-03"
-          - sub_level: "82"
-            os_patch_level: "2025-04"
-          - sub_level: "87"
-            os_patch_level: "2025-05"
-          - sub_level: "89"
-            os_patch_level: "2025-06"
-          - sub_level: "98"
-            os_patch_level: "2025-07"
-          - sub_level: "102"
-            os_patch_level: "2025-09"
-          - sub_level: "X"
-            os_patch_level: "lts"
+          - sub_level: "41"
+          os_patch_level: "2022-06"
+        - sub_level: "41"
+          os_patch_level: "2022-07"
+        - sub_level: "41"
+          os_patch_level: "2022-08"
+        - sub_level: "41"
+          os_patch_level: "2022-09"
+        - sub_level: "41"
+          os_patch_level: "2022-10"
+        - sub_level: "41"
+          os_patch_level: "2022-11"
+        - sub_level: "74"
+          os_patch_level: "2022-12"
+        - sub_level: "74"
+          os_patch_level: "2023-01"
+        - sub_level: "78"
+          os_patch_level: "2023-02"
+        - sub_level: "78"
+          os_patch_level: "2023-03"
+        - sub_level: "94"
+          os_patch_level: "2023-04"
+        - sub_level: "94"
+          os_patch_level: "2023-05"
+        - sub_level: "104"
+          os_patch_level: "2023-06"
+        - sub_level: "104"
+          os_patch_level: "2023-07"
+        - sub_level: "119"
+          os_patch_level: "2023-08"
+        - sub_level: "119"
+          os_patch_level: "2023-09"
+        - sub_level: "123"
+          os_patch_level: "2023-10"
+        - sub_level: "123"
+          os_patch_level: "2023-11"
+        - sub_level: "137"
+          os_patch_level: "2023-12"
+        - sub_level: "137"
+          os_patch_level: "2024-01"
+        - sub_level: "144"
+          os_patch_level: "2024-02"
+        - sub_level: "144"
+          os_patch_level: "2024-03"
+        - sub_level: "148"
+          os_patch_level: "2024-04"
+        - sub_level: "148"
+          os_patch_level: "2024-05"
+        - sub_level: "149"
+          os_patch_level: "2024-06"
+        - sub_level: "149"
+          os_patch_level: "2024-07"
+        - sub_level: "151"
+          os_patch_level: "2024-08"
+        - sub_level: "153"
+          os_patch_level: "2024-09"
+        - sub_level: "167"
+          os_patch_level: "2024-11"
+        - sub_level: "170"
+          os_patch_level: "2025-01"
+        - sub_level: "178"
+          os_patch_level: "2025-03"
+        - sub_level: "180"
+          os_patch_level: "2025-05"
+        - sub_level: "185"
+          os_patch_level: "2025-07"
+        - sub_level: "189"
+          os_patch_level: "2025-09"
+        - sub_level: "194"
+          os_patch_level: "2025-12"
+        - sub_level: "X"
+          os_patch_level: "lts"
     continue-on-error: true
 
     steps:
@@ -42,8 +90,8 @@ jobs:
 
       - name: Set environment
         run: |
-          echo "ANDROID_VERSION=android15" >> $GITHUB_ENV
-          echo "KERNEL_VERSION=6.6" >> $GITHUB_ENV
+          echo "ANDROID_VERSION=android13" >> $GITHUB_ENV
+          echo "KERNEL_VERSION=5.15" >> $GITHUB_ENV
           echo "SUB_LEVEL=${{ matrix.sub_level }}" >> $GITHUB_ENV
           echo "OS_PATCH_LEVEL=${{ matrix.os_patch_level }}" >> $GITHUB_ENV
           echo "DATE=$(TZ=Asia/Jakarta date +%Y%m%d%H%M)" >> $GITHUB_ENV
@@ -77,8 +125,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/kylieeXD/android_kernel_common-6.6
-
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/nevadamurdock/common-android13-5.15
       - name: Set DATE and TAG
         run: |
           DATE=$(TZ=Asia/Jakarta date +%Y%m%d%H%M)
@@ -86,7 +133,7 @@ jobs:
 
       - name: Create Git tag
         run: |
-          git tag -a "$TAG" -m "SukiSU & SuSFS"
+          git tag -a "$TAG" -m "KSUN & SuSFS"
           git push origin "$TAG"
 
       - name: Download all artifacts
@@ -100,4 +147,5 @@ jobs:
           tag_name: ${{ env.TAG }}
           files: artifact/**
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}@github.com/nevadamurdock/common-android13-5.15
+
