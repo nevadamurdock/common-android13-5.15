@@ -27,9 +27,9 @@ export ANYKERNEL3="$ANYKERNEL3"
 
 # Setup Build Environment
 AOSP_MIRROR=https://android.googlesource.com
-BRANCH=main-kernel-2025
-git clone $AOSP_MIRROR/kernel/prebuilts/build-tools -b $BRANCH --depth 1 kernel-build-tools &
-git clone $AOSP_MIRROR/platform/system/tools/mkbootimg -b $BRANCH --depth 1 mkbootimg &
+BRANCH=common-android13-5.15
+git clone $AOSP_MIRROR/kernel/prebuilts/build-tools -b common-android13-5.15 --depth 1 kernel-build-tools &
+git clone $AOSP_MIRROR/platform/system/tools/mkbootimg -b common-android13-5.15 --depth 1 mkbootimg &
 wait
 
 export AVBTOOL="$ROOT/kernel-build-tools/linux-x86/bin/avbtool"
